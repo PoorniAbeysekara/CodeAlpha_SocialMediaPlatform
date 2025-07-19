@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - ChatterBox</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+           
+                <a href="index.html" class="logo">ChatterBox</a>
+            </a>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="profile.html" id="nav-profile">My Profile</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>My Profile</h1>
+        <div class="profile-section">
+            <h2>Profile Information</h2>
+            <div id="profileDisplay" class="profile-card">
+                <p><strong>Username:</strong> <span id="profileUsername"></span></p>
+                <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+                <p><strong>Bio:</strong> <span id="profileBio"></span></p>
+                <p><strong>Location:</strong> <span id="profileLocation"></span></p>
+                <p><strong>Joined:</strong> <span id="profileJoinedDate"></span></p>
+                <button id="editProfileBtn" class="primary-btn">Edit Profile</button>
+                <button id="deleteAccountBtn" class="delete-btn">Delete Account</button>
+                <p id="profileMessage" class="message"></p>
+            </div>
+
+            <div id="editProfileFormContainer" class="form-container" style="display: none;">
+                <h3>Edit Your Profile</h3>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="bio">Bio:</label>
+                        <textarea id="bio" maxlength="500" placeholder="Tell us about yourself..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location:</label>
+                        <input type="text" id="location" placeholder="e.g., Colombo, Sri Lanka">
+                    </div>
+                    
+                    <h4>Social Links</h4>
+                    <div class="form-group">
+                        <label for="youtube">YouTube:</label>
+                        <input type="url" id="youtube" placeholder="YouTube channel URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="twitter">Twitter:</label>
+                        <input type="url" id="twitter" placeholder="Twitter profile URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="facebook">Facebook:</label>
+                        <input type="url" id="facebook" placeholder="Facebook profile URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="linkedin">LinkedIn:</label>
+                        <input type="url" id="linkedin" placeholder="LinkedIn profile URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="instagram">Instagram:</label>
+                        <input type="url" id="instagram" placeholder="Instagram profile URL">
+                    </div>
+                    <button type="submit" class="primary-btn">Save Profile</button>
+                    <button type="button" id="cancelEditBtn" class="secondary-btn">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="profile-posts-section">
+            <h2>My Posts</h2>
+            <div id="userPosts" class="posts-grid">
+                <p id="noUserPostsMessage" style="text-align: center; color: var(--light-text-color);">No posts to display.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 ChatterBox. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="profile.js"></script> </body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ChatterBox</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">ChatterBox</a>
+            <ul>
+                <li id="nav-login"><a href="login.html">Login</a></li>
+                <li id="nav-register"><a href="register.html">Register</a></li>
+                <li id="nav-dashboard" style="display:none;"><a href="index.html">Dashboard</a></li>
+                 <li id="nav-profile-link"><a href="profile.html">My Profile</a></li>
+                <li id="nav-logout" style="display:none;"><a href="#" id="logoutBtn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Welcome to ChatterBox!</h1>
+        <p id="userWelcome"></p>
+
+        <section class="post-form-section">
+            <h2>Create New Post</h2>
+            <form id="createPostForm">
+                <div class="form-group">
+                    <textarea id="postText" placeholder="What's on your mind?" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="postImageUrl">Optional Image URL:</label>
+                    <input type="text" id="postImageUrl" placeholder="e.g., https://example.com/image.jpg"> 
+                </div>
+                <button type="submit">Post</button>
+                <p class="message" id="postMessage"></p>
+            </form>
+        </section>
+
+        <section class="posts-section">
+            <h2>Recent Posts</h2>
+            <div id="postsContainer" class="posts-grid">
+                <p id="loadingPosts">Loading posts...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 ChatterBox. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const userId = localStorage.getItem('userId');
+            const userWelcome = document.getElementById('userWelcome');
+            const navLogin = document.getElementById('nav-login');
+            const navRegister = document.getElementById('nav-register');
+            const navDashboard = document.getElementById('nav-dashboard');
+            const navLogout = document.getElementById('nav-logout');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const postsContainer = document.getElementById('postsContainer');
+            const loadingPosts = document.getElementById('loadingPosts');
+            const createPostForm = document.getElementById('createPostForm');
+            const postMessage = document.getElementById('postMessage');
+            const postTextInput = document.getElementById('postText');
+            const postImageUrlInput = document.getElementById('postImageUrl'); 
+
+
+            // --- Authentication UI Logic ---
+            if (token) {
+                userWelcome.textContent = 'You are logged in!'; // Replace with actual username later
+                navLogin.style.display = 'none';
+                navRegister.style.display = 'none';
+                navDashboard.style.display = 'list-item';
+                navLogout.style.display = 'list-item';
+
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('userId'); 
+                        window.location.href = 'login.html'; 
+                    });
+                }
+                if (createPostForm) {
+                    createPostForm.style.display = 'block'; 
+                }
+            } else {
+                userWelcome.textContent = 'Please log in to view your dashboard.';
+                navLogin.style.display = 'list-item';
+                navRegister.style.display = 'list-item';
+                navDashboard.style.display = 'none';
+                navLogout.style.display = 'none';
+                
+                if (createPostForm) {
+                   createPostForm.style.display = 'none';
+                }
+                setTimeout(() => {
+                    if (!token && window.location.pathname.endsWith('index.html')) {
+                    window.location.href = 'login.html';
+                    }
+                }, 500); 
+            }
+
+
+            // --- Function to Fetch and Display Posts ---
+            async function fetchAndDisplayPosts() {
+                console.log('Fetching and displaying posts...');
+                loadingPosts.style.display = 'block'; 
+                postsContainer.innerHTML = ''; 
+                console.log('Posts container cleared.'); 
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/posts', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const posts = await response.json();
+
+                    if (response.ok) {
+                        loadingPosts.style.display = 'none'; 
+                        if (posts.length === 0) {
+                            postsContainer.innerHTML = '<p>No posts yet. Be the first to create one!</p>';
+                            console.log('No posts found, message displayed.'); 
+                        } else {
+                            const loggedInUserId = localStorage.getItem('userId');
+                            
+                            posts.forEach((post, index) => { 
+                                console.log(`Processing post ${index + 1} (ID: ${post._id}, Text: "${post.text.substring(0, Math.min(post.text.length, 30))}...")`); 
+                                const postElement = document.createElement('div');
+                                postElement.classList.add('post-card');
+
+                                // Determine if the logged-in user has liked this post
+                                const loggedInUserLiked = loggedInUserId && post.likes && post.likes.some(like => like.user.toString() === loggedInUserId);
+
+                                postElement.innerHTML = `
+                                    <h3>@${post.user.username}</h3>
+                                    <p>${post.text}</p>
+                                    ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Post Image" onerror="this.style.display='none'">` : ''}
+                                    <small>${new Date(post.date).toLocaleString()}</small>
+                                    <div class="post-actions">
+                                        <span>Likes: <span class="like-count">${post.likes ? post.likes.length : 0}</span></span>
+                                        <span>Comments: <span class="comment-count">${post.comments ? post.comments.length : 0}</span></span>
+                                        ${token ? `<button class="like-btn ${loggedInUserLiked ? 'liked' : ''}" data-post-id="${post._id}">
+                                            ${loggedInUserLiked ? 'Unlike' : 'Like'}
+                                        </button>` : ''}
+                                        ${loggedInUserId && post.user._id === loggedInUserId ? `<button class="delete-btn" data-post-id="${post._id}">Delete</button>` : ''}
+                                    </div>
+                                    <div class="comments-section">
+                                        <div class="comments-list">
+                                            ${post.comments && post.comments.length > 0 ? 
+                                                post.comments.map(comment => `
+                                                    <div class="comment-item">
+                                                        <strong>@${comment.username}</strong>: ${comment.text}
+                                                        <small>${new Date(comment.date).toLocaleString()}</small>
+                                                    </div>
+                                                `).join('')
+                                                : '<p>No comments yet.</p>'
+                                            }
+                                        </div>
+                                        ${token ? `
+                                            <form class="comment-form" data-post-id="${post._id}">
+                                                <input type="text" class="comment-input" placeholder="Add a comment..." required>
+                                                <button type="submit">Comment</button>
+                                            </form>
+                                        ` : ''}
+                                    </div>
+                                    `;
+                                postsContainer.appendChild(postElement);
+                                console.log(`Post ${index + 1} appended. Total children in container: ${postsContainer.children.length}`); 
+                            });
+
+                            document.querySelectorAll('.delete-btn').forEach(button => {
+                                button.addEventListener('click', handleDeletePost);
+                            });
+                            document.querySelectorAll('.like-btn').forEach(button => {
+                                button.addEventListener('click', handleLikePost);
+                            });
+                            // NEW: Attach event listener to comment forms
+                            document.querySelectorAll('.comment-form').forEach(form => {
+                                form.addEventListener('submit', handleCommentPost);
+                            });
+                        }
+                    } else {
+                        postsContainer.innerHTML = `<p style="color: red;">Failed to load posts: ${posts.message || 'Unknown error'}</p>`;
+                        console.error('Failed to fetch posts:', posts);
+                    }
+                } catch (error) {
+                    loadingPosts.style.display = 'none';
+                    postsContainer.innerHTML = '<p style="color: red;">Network error. Could not load posts.</p>';
+                    console.error('Network error while fetching posts:', error);
+                }
+            }
+
+
+            // --- Function to Handle Post Creation ---
+            async function createNewPost(event) {
+                event.preventDefault(); 
+
+                const text = postTextInput.value.trim();
+                const imageUrl = postImageUrlInput.value.trim();
+                const token = localStorage.getItem('token');
+
+                postMessage.textContent = '';
+
+                if (!text) {
+                    postMessage.textContent = 'Post text cannot be empty!';
+                    postMessage.style.color = 'red';
+                    return;
+                }
+                if (!token) {
+                    postMessage.textContent = 'You must be logged in to create a post.';
+                    postMessage.style.color = 'red';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/posts', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` 
+                        },
+                        body: JSON.stringify({ text, imageUrl })
+                    });
+
+                    const data = await response.json().catch(() => ({ message: 'Error parsing JSON' }));
+
+                    if (response.ok) {
+                        postMessage.textContent = 'Post created successfully!';
+                        postMessage.style.color = 'green';
+                        postTextInput.value = ''; 
+                        postImageUrlInput.value = '';
+                        fetchAndDisplayPosts(); 
+                    } else {
+                        postMessage.textContent = data.message || (data.errors && data.errors[0] ? data.errors[0].msg : 'Failed to create post.');
+                        postMessage.style.color = 'red';
+                        console.error('Post creation error:', data);
+                    }
+                } catch (error) {
+                    postMessage.textContent = 'Network error during post creation.';
+                    postMessage.style.color = 'red';
+                    console.error('Network error during post creation:', error);
+                }
+            }
+
+
+            // --- Function to Handle Post Deletion ---
+            async function handleDeletePost(event) {
+                const postId = event.target.dataset.postId;
+                const token = localStorage.getItem('token');
+
+                console.log("Token value before DELETE fetch:", token); 
+
+                if (!confirm('Are you sure you want to delete this post?')) {
+                    return;
+                }
+
+                if (!token) {
+                    alert('You must be logged in to delete a post.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`http://localhost:3000/api/posts/${postId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}` 
+                        }
+                    });
+
+                    const data = await response.json().catch(() => ({ message: 'Error parsing JSON' })); 
+
+                    if (response.ok) {
+                        alert('Post deleted successfully!');
+                        fetchAndDisplayPosts(); 
+                    } else {
+                        alert(data.message || 'Failed to delete post.');
+                        console.error('Post deletion error:', data);
+                    }
+                } catch (error) {
+                    alert('Network error during post deletion.');
+                    console.error('Network error during post deletion:', error);
+                }
+            }
+
+            // --- Function to Handle Post Liking/Unliking ---
+            async function handleLikePost(event) {
+                const postId = event.target.dataset.postId;
+                const token = localStorage.getItem('token');
+                const loggedInUserId = localStorage.getItem('userId'); 
+
+                if (!token) {
+                    alert('You must be logged in to like posts.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`http://localhost:3000/api/posts/like/${postId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    const data = await response.json().catch(() => ({ message: 'Error parsing JSON' }));
+
+                    if (response.ok) {
+                        const likeButton = event.target;
+                        const postActionsDiv = likeButton.closest('.post-actions');
+                        const likeCountSpan = postActionsDiv.querySelector('.like-count'); 
+
+                        if (likeButton.classList.contains('liked')) {
+                            likeButton.classList.remove('liked');
+                            likeButton.textContent = 'Like';
+                        } else {
+                            likeButton.classList.add('liked');
+                            likeButton.textContent = 'Unlike';
+                        }
+                        
+                        likeCountSpan.textContent = data.likes.length;
+
+                    } else {
+                        alert(data.message || 'Failed to like/unlike post.');
+                        console.error('Like/Unlike error:', data);
+                    }
+                } catch (error) {
+                    alert('Network error during like/unlike operation.');
+                    console.error('Network error during like/unlike:', error);
+                }
+            }
+
+            // --- Function to Handle Post Commenting ---
+            async function handleCommentPost(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const postId = event.target.dataset.postId;
+                const commentInput = event.target.querySelector('.comment-input');
+                const text = commentInput.value.trim();
+                const token = localStorage.getItem('token');
+
+                if (!text) {
+                    alert('Comment text cannot be empty.');
+                    return;
+                }
+                if (!token) {
+                    alert('You must be logged in to comment.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`http://localhost:3000/api/posts/comment/${postId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ text })
+                    });
+
+                    const data = await response.json().catch(() => ({ message: 'Error parsing JSON' }));
+
+                    if (response.ok) {
+                        alert('Comment added successfully!');
+                        commentInput.value = ''; // Clear the input field
+
+                        // Re-fetch and display all posts to update comments and counts
+                        // This is the simplest way to update the UI after a comment.
+                        fetchAndDisplayPosts(); 
+                    } else {
+                        alert(data.message || (data.errors && data.errors[0] ? data.errors[0].msg : 'Failed to add comment.'));
+                        console.error('Comment error:', data);
+                    }
+                } catch (error) {
+                    alert('Network error during comment operation.');
+                    console.error('Network error during comment:', error);
+                }
+            }
+
+            // --- Initial Load & Event Listeners ---
+            fetchAndDisplayPosts(); 
+
+            if (createPostForm) {
+                createPostForm.addEventListener('submit', createNewPost);
+            }
+        }); 
+    </script>
+</body>
+</html>

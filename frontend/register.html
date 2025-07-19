@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ChatterBox</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">ChatterBox</a>
+            <ul>
+                <li id="nav-login"><a href="login.html">Login</a></li>
+                <li id="nav-register"><a href="register.html">Register</a></li>
+                </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="form-container">
+            <h2>Register for ChatterBox</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit">Register</button>
+                <p class="message" id="message"></p>
+            </form>
+            <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 ChatterBox. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // --- Register Page JavaScript Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerForm = document.getElementById('registerForm');
+            const usernameInput = document.getElementById('username');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const messageElement = document.getElementById('message');
+
+            // If a token already exists, redirect to dashboard
+            if (localStorage.getItem('token')) {
+                window.location.href = 'index.html';
+                return; // Stop execution to prevent form interaction
+            }
+
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault(); // Prevent default form submission
+
+                    const username = usernameInput.value;
+                    const email = emailInput.value;
+                    const password = passwordInput.value;
+                    messageElement.textContent = ''; // Clear previous messages
+                    messageElement.style.color = ''; // Reset color
+
+                    try {
+                        const response = await fetch('http://localhost:3000/api/auth/register', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ username, email, password }),
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            messageElement.textContent = 'Registration successful! You can now log in.';
+                            messageElement.style.color = 'green';
+                            // Optionally, clear the form fields
+                            usernameInput.value = '';
+                            emailInput.value = '';
+                            passwordInput.value = '';
+
+                            // Optionally, redirect to login page after a delay
+                            setTimeout(() => {
+                                window.location.href = 'login.html'; 
+                            }, 2000); // Redirect after 2 seconds
+                            
+                        } else {
+                            messageElement.textContent = data.message || (data.errors && data.errors[0] ? data.errors[0].msg : 'Registration failed. Please try again.');
+                            messageElement.style.color = 'red';
+                        }
+                    } catch (error) {
+                        messageElement.textContent = 'Network error. Could not connect to the server. Is the backend running?';
+                        messageElement.style.color = 'red';
+                        console.error('Registration error:', error);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

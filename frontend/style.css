@@ -1,0 +1,450 @@
+
+:root {
+    
+    --primary-color: #3498db; /* A calm, professional blue */
+    --secondary-color: #2c3e50; /* A dark charcoal/navy, good for text and darker accents */
+    --background-color: #ecf0f1; /* A very light grey/off-white for the overall page */
+    --card-background: #ffffff; /* Pure white for cards */
+    --text-color: #34495e; /* A slightly softer dark grey for main text */
+    --light-text-color: #7f8c8d; /* Medium grey for secondary text, like dates */
+    --border-color: #bdc3c7; /* A light, subtle grey for borders */
+    --danger-color: #e74c3c; /* Red for delete actions */
+    --success-color: #2ecc71; /* Green for success messages */
+    --link-color: #3498db;
+    --hover-color: #2980b9; /* A slightly darker primary blue for hover states */
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.12);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header & Navigation */
+header {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 1rem 0;
+    box-shadow: 0 2px 5px var(--shadow-medium);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+nav .logo {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.8rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+}
+
+nav ul li {
+    margin-left: 25px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+    background-color: var(--hover-color);
+}
+
+/* Main Content Container */
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+    flex-grow: 1; /* Allows main content to expand */
+}
+
+/* Headings & Paragraphs */
+h1, h2, h3 {
+    color: #12628de0;
+    margin-bottom: 15px;
+}
+
+h1 { font-size: 2.5rem; text-align: center; margin-bottom: 25px; }
+h2 { font-size: 1.8rem; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-top: 30px; }
+h3 { font-size: 1.4rem; color: var(--text-color); margin-bottom: 10px; }
+
+p {
+    margin-bottom: 10px;
+}
+
+/* Messages (e.g., success/error) */
+.message {
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* Form Styles */
+.form-container { /* For login/register pages */
+    background: var(--card-background);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px var(--shadow-light);
+    max-width: 500px;
+    margin: 50px auto;
+    text-align: center;
+}
+
+.form-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+form {
+    background: var(--card-background); /* Also applied to create post form */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--shadow-light);
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--light-text-color);
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus,
+textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); /* Adjust shadow color to new primary */
+    outline: none;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+button[type="submit"] {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: auto; /* Allow buttons to size to content */
+}
+
+button[type="submit"]:hover {
+    background-color: var(--hover-color);
+    transform: translateY(-2px);
+}
+
+/* Link in form container */
+.form-container p a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.form-container p a:hover {
+    text-decoration: underline;
+}
+
+/* Post Sections */
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.post-card {
+    background: var(--card-background);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px var(--shadow-light);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px var(--shadow-medium);
+}
+
+.post-card h3 {
+    margin-bottom: 8px;
+    color: var(--primary-color);
+    font-size: 1.3rem;
+}
+
+.post-card p {
+    margin-bottom: 15px;
+    color: var(--text-color);
+    line-height: 1.7;
+}
+
+.post-card img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: block; 
+}
+
+.post-card small {
+    color: var(--light-text-color);
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: block; 
+}
+
+/* Post Actions (Likes, Comments, Buttons) */
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.post-actions span {
+    font-weight: 500;
+    color: var(--light-text-color);
+    margin-right: 10px; 
+}
+
+.post-actions button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    margin-left: 10px; 
+}
+
+.like-btn {
+    background-color: var(--secondary-color); 
+    color: white;
+}
+
+.like-btn:hover {
+    background-color: var(--hover-color);
+}
+
+.like-btn.liked {
+    background-color: var(--primary-color); 
+}
+
+.like-btn.liked:hover {
+    background-color: var(--hover-color);
+}
+
+.delete-btn {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b; 
+}
+
+/* Comments Section - FIXES APPLIED HERE */
+.comments-section {
+    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 15px;
+}
+
+.comments-list {
+    margin-bottom: 15px;
+    max-height: 200px; 
+    overflow-y: auto; 
+    padding-right: 5px; 
+   
+    scrollbar-width: thin; 
+    scrollbar-color: var(--border-color) var(--background-color); 
+}
+/* For WebKit browsers (Chrome, Safari) */
+.comments-list::-webkit-scrollbar {
+    width: 8px;
+}
+.comments-list::-webkit-scrollbar-track {
+    background: var(--background-color);
+    border-radius: 10px;
+}
+.comments-list::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
+    border: 2px solid var(--background-color);
+}
+
+.comment-item {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    word-wrap: break-word; /* Ensure long words break */
+}
+
+.comment-item strong {
+    color: var(--primary-color);
+    margin-right: 5px;
+}
+
+.comment-item small {
+    display: block;
+    color: var(--light-text-color);
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.comment-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: flex-end; 
+}
+
+.comment-form .comment-input {
+    flex-grow: 1; 
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 0.95rem;
+    min-width: 0; 
+}
+
+.comment-form button {
+    background-color: var(--secondary-color); 
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0; 
+}
+
+.comment-form button:hover {
+    background-color: var(--hover-color);
+}
+
+/* Footer */
+footer {
+    background: var(--primary-color);
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+    margin-top: 30px;
+    box-shadow: 0 -2px 5px var(--shadow-medium);
+}
+
+/* Basic Responsiveness */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        padding: 0 10px;
+    }
+    nav ul {
+        margin-top: 15px;
+        width: 100%;
+        justify-content: space-around;
+    }
+    nav ul li {
+        margin: 0 10px;
+    }
+
+    .container {
+        padding: 15px;
+        margin: 20px auto;
+    }
+
+    .posts-grid {
+        grid-template-columns: 1fr; 
+    }
+
+    .form-container {
+        margin: 20px auto;
+        padding: 20px;
+    }
+
+    .post-actions {
+        flex-wrap: wrap; 
+        justify-content: center;
+    }
+
+    .post-actions span, .post-actions button {
+        margin-bottom: 10px;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+}
+
+/* Specific responsiveness for comment form on very small screens */
+@media (max-width: 480px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    nav .logo { font-size: 1.5rem; }
+
+    .comment-form {
+        flex-direction: column; 
+        gap: 8px; 
+    }
+    .comment-form button {
+        width: 100%; 
+        padding: 10px;
+    }
+}
+
