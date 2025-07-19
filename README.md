@@ -58,5 +58,7 @@ cd my-social-media-app # Replace with your project folder name
 2. Backend Setup
 
 cd backend
+npm install
+
 node server.js
 
